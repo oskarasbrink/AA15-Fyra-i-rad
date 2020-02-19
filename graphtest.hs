@@ -23,7 +23,7 @@
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss
 windowDisplay :: Display
-windowDisplay = InWindow "Window" (100, 100) (10, 10)
+windowDisplay = InWindow "Window" (300, 300) (100, 100)
 
 --main = animate windowDisplay white animationFunc
 
@@ -36,7 +36,6 @@ type World = [(Float, Float)]
 --world tar nu flera koordinater. kanske bör dom ta nycklar för sin pos
 --world =/= gamestate ?? 
 --play tar ingen gamestate??
---pusha
 
 main :: IO ()
 main = play
@@ -53,7 +52,10 @@ mkCircle :: Color -> Float -> Float -> Picture
 mkCircle col x y = pictures [translate x y $ color col $ circleSolid 26]
 
 drawingFunc :: World -> Picture
-drawingFunc ((x, y):(z,q):xs) = pictures [mkCircle black x y, mkCircle black z q]
+drawingFunc ((x, y):(z,q):xs) = pictures [rectangleSolid 1400 900, mkCircle white 0 40, mkCircle white 150 140, mkCircle white 300 240, mkCircle white 450 240, mkCircle white 300 140, mkCircle white 300 240, 
+                                                                   mkCircle white 0 140, mkCircle white 0 240, mkCircle white 0 (-60), mkCircle white 150 240, mkCircle white 450 140,
+                                                                   mkCircle white 0 (-160), mkCircle white 0 (-260)]
+--[mkCircle black 20 40, mkCircle black 80 100, mkCircle black 140 160, mkCircle black 200 220]
 --drawingFunc (x, y) = pictures[translate x y (Circle 50),translate x y (Circle 70)]
 --rekursivt skriva ut allt till bilden wtf
 --eller fylla lista med alla "möjliga" markörer. varje markör röd/blå/grå
