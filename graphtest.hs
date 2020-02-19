@@ -36,6 +36,7 @@ type World = [(Float, Float)]
 --world tar nu flera koordinater. kanske bör dom ta nycklar för sin pos
 --world =/= gamestate ?? 
 --play tar ingen gamestate??
+--pusha
 
 main :: IO ()
 main = play
