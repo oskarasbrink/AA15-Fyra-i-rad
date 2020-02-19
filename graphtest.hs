@@ -54,7 +54,12 @@ mkCircle col x y = pictures [translate x y $ color col $ circleSolid 26]
 drawingFunc :: World -> Picture
 drawingFunc ((x, y):(z,q):xs) = pictures [rectangleSolid 1400 900, mkCircle white 0 40, mkCircle white 150 140, mkCircle white 300 240, mkCircle white 450 240, mkCircle white 300 140, mkCircle white 300 240, 
                                                                    mkCircle white 0 140, mkCircle white 0 240, mkCircle white 0 (-60), mkCircle white 150 240, mkCircle white 450 140,
-                                                                   mkCircle white 0 (-160), mkCircle white 0 (-260)]
+                                                                   mkCircle white 0 (-160), mkCircle white 0 (-260), mkCircle white 150 40, mkCircle white 150 (-60), mkCircle white 150 (-160), mkCircle white 150 (-260),
+                                                                   mkCircle white 300 40, mkCircle white 300 (-60), mkCircle white 300 (-160), mkCircle white 300 (-260),
+                                                                   mkCircle white 450 40, mkCircle white 450 (-60), mkCircle white 450 (-160), mkCircle white 450 (-260),
+                                                                   mkCircle white 600 240, mkCircle white 600 140, mkCircle white 600 40, mkCircle white 600 (-60), mkCircle white 600 (-160), mkCircle white 600 (-260),
+                                                                   mkCircle white (-150) 240, mkCircle white (-150) 140, mkCircle white (-150) 40, mkCircle white (-150) (-60), mkCircle white (-150) (-160), mkCircle white (-150) (-260),
+                                                                   mkCircle white (-300) 240, mkCircle white (-300) 140, mkCircle white (-300) 40, mkCircle white (-300) (-60), mkCircle white (-300) (-160), mkCircle white (-300) (-260)]
 --[mkCircle black 20 40, mkCircle black 80 100, mkCircle black 140 160, mkCircle black 200 220]
 --drawingFunc (x, y) = pictures[translate x y (Circle 50),translate x y (Circle 70)]
 --rekursivt skriva ut allt till bilden wtf
