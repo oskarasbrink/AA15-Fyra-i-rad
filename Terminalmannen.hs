@@ -1,7 +1,13 @@
-
-r = "Red"
-b = "Blue"
+--main :: IO ()
+asd = let
+    r = "Red"
+    b = "Blue"
+    c = makegray "grey" in
+        dropmannen r 0 1 (dropmannen r 0 1 (dropmannen r 0 1 (dropmannen r 0 1 (dropmannen r 0 1 (dropmannen r 0 1 (dropmannen r 0 1 c))))))
 --g = "Gray"
+
+
+
 makegray :: String -> [String]
 makegray g = [g,g,g,g,g,g,g
     , g,g,g,g,g,g,g
@@ -21,5 +27,6 @@ traverseList x (c:cs) | x == 0 = c
 
 
 dropmannen :: String -> Int ->  Int -> [String] -> [String]
-dropmannen color dim x c | (traverseList (((6-dim)*7)-(7-x))) c == "grey" = changeColor color (((6-dim)*7)-(7-x)) c
+dropmannen color dim x c | dim*7 == 42 = c
+                         | (traverseList (((6-dim)*7)-(7-x))) c == "grey" = changeColor color (((6-dim)*7)-(7-x)) c
                          | otherwise = dropmannen  color (dim+1) x c 
