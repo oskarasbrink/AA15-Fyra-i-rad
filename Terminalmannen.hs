@@ -13,7 +13,7 @@ makegray g = [g,g,g,g,g,g,g
     , g,g,g,g,g,g,g
     , g,g,g,g,g,g,g
     , g,g,g,g,g,g,g
-    , g,g,g,g,g,g,g
+    , g,g,g,g,g,g,ge
     , g,g,g,g,g,g,g]
 changeColor :: String -> Int -> [String] -> [String]
 changeColor color x (k:cs) | x > 0 =  [k] ++ changeColor color (x-1) cs
