@@ -51,6 +51,7 @@ main = play
 mkCircle :: Color -> Float -> Float -> Picture
 mkCircle col x y = pictures [translate x y $ color col $ circleSolid 26]
 
+-- kolumn, jämna avstånd som kollar högre eller mindre från toppen, rutnät, ändrar x och y koordinater
 drawingFunc :: World -> Picture
 drawingFunc ((x, y):(z,q):xs) = pictures [rectangleSolid 1400 900, mkCircle white 0 40, mkCircle white 150 140, mkCircle white 300 240, mkCircle white 450 240, mkCircle white 300 140, mkCircle white 300 240, 
                                                                    mkCircle white 0 140, mkCircle white 0 240, mkCircle white 0 (-60), mkCircle white 150 240, mkCircle white 450 140,
@@ -124,7 +125,6 @@ offset = 100
 
 window :: Display
 window = InWindow "Pong" (width, height) (offset, offset)
-
 background :: Color
 background = black
 
