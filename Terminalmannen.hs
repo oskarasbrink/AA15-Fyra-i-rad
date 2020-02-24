@@ -18,9 +18,9 @@ makegray :: String -> [String]
 makegray g = [g,g,g,g,g,g,g
     , g,g,g,g,g,g,g
     , g,g,g,g,g,g,g
-    , g,g,g,g,g,g,g
-    , g,g,g,g,g,g,g
-    , g,g,g,g,g,g,g]
+    , g,g,g,g,"Red",g,g
+    , g,g,g,g,g,"Red",g
+    , g,g,g,g,g,g,"Red"]
 changeColor :: String -> Int -> [String] -> [String]
 changeColor color x (k:cs) | x > 0 =  [k] ++ changeColor color (x-1) cs
                 | otherwise = (color:cs)
@@ -51,3 +51,30 @@ checkWinRow color index tracker c | tracker == 4 = True
                                   | index == length c + 1= False
                                   | traverseList (index) c == color && traverseList (index + 1) c == color = (checkWinRow color (index + 1) (tracker + 1) c) 
                                   | otherwise = checkWinRow color (index +1) 0 c
+
+--VAD FAN ÄR DE HÄR hela jävLA WINCHECK kan vara EN JÄvla FUNKTION dkljhfgjkldfgkjhdsfg
+checkDiagonalRight :: String -> Int -> Int -> [String] -> Bool
+checkDiagonalRight color index tracker c | tracker == 4 = True
+                                         | index `mod` 7 == 6 || index > 41 = False
+                                         | traverseList (index) c == color = checkDiagonalRight color (index - 6) (tracker +1) c
+                                         | otherwise = checkDiagonalRight color (index - 6) 0 c
+
+checkDiagonalLeft :: String -> Int -> Int -> [String] -> Bool
+checkDiagonalLeft color index tracker c | tracker == 4 = True
+                                        | index `mod` 7 == 0 || index < 0 = False
+                                        | traverseList (index) c == color = checkDiagonalLeft color (index - 8) (tracker +1) c
+                                        | otherwise = checkDiagonalLeft color (index - 8) 0 c
+
+checkDiagonalMannen :: String -> [String] -> Bool
+checkDiagonalMannen color c | checkDiagonalRight color 21 0 c ||
+ checkDiagonalRight color 28 0 c || 
+ checkDiagonalRight color 35 0 c || 
+ checkDiagonalRight color 36 0 c || 
+ checkDiagonalRight color 37 0 c || 
+ checkDiagonalRight color 38 0 c  = True
+                             | checkDiagonalLeft color 27 0 c || checkDiagonalLeft color 34 0 c || checkDiagonalLeft color 41 0 c || checkDiagonalLeft color 40 0 c ||
+ checkDiagonalLeft color 39 0 c ||
+ checkDiagonalLeft color 38 0 c = True
+                             | otherwise = False
+
+                             
