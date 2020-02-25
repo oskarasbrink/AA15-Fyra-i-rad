@@ -1,4 +1,5 @@
 --main :: IO ()
+
 asd = let
     r = "Red"
     b = "Blue"
@@ -17,13 +18,30 @@ asd2 = let
 makegray :: String -> [String]
 makegray g = [g,g,g,g,g,g,g
     , g,g,g,g,g,g,g
+    , g,g,"Red",g,g,g,g
     , g,g,g,g,g,g,g
     , g,g,g,g,"Red",g,g
-    , g,g,g,g,g,"Red",g
-    , g,g,g,g,g,g,"Red"]
+    , g,g,"Red","Red","Red","Red",g]
 changeColor :: String -> Int -> [String] -> [String]
 changeColor color x (k:cs) | x > 0 =  [k] ++ changeColor color (x-1) cs
                 | otherwise = (color:cs)
+
+--main = do
+    --skriv hej skriv en int
+    --hämta int
+    --kalla på dropmannen med röd och int
+    --skriv ut planen
+    --kolla vinst röd
+       -- om vinst, skriv ut skit och avbryt
+
+    --blå:
+    --skriv hej skriv blå int
+    -- hämta int
+    --kalla drop men int och blå
+    --skriv ut planen
+    --kolla vinst blå
+         -- om vinst, skriv ut skit och avbryt
+    --main
 
 
 
@@ -35,7 +53,7 @@ traverseList x (c:cs) | x == length (c:cs) = c
 
 dropmannen :: String -> Int ->  Int -> [String] -> [String]
 dropmannen color dim x c | dim*7 == 42 = c
-                         | (traverseList (((6-dim)*7)-(7-x))) c == "grey" = changeColor color (((6-dim)*7)-(7-x)) c
+                         | (traverseList (((6-dim)*7)-(7-x))) c /= color = changeColor color (((6-dim)*7)-(7-x)) c
                          | otherwise = dropmannen  color (dim+1) x c 
 
 
@@ -45,26 +63,30 @@ checkWinColumn color index c | (traverseList (index + 7) c == color && traverseL
 
 
 --vill jättegärna kunna hålla koll på koordinaten där markören hamnar 
+
+
 checkWinRow :: String -> Int -> Int -> [String] -> Bool
-checkWinRow color index tracker c | tracker == 4 = True
-                                  | index `mod` 7 == 6 = False
-                                  | index == length c + 1= False
+checkWinRow color index tracker c | tracker == 3 = True
+                                 -- | index `mod` 7 == 6 = False -- ska egentligen göra : checkWinRow color index + 1 tracker=0 c
+                                  | index == length c + 1 = False -- vet faktiskt inte
+                                  | index `mod` 7 == 6 =  checkWinRow color (index + 1) 0 c
                                   | traverseList (index) c == color && traverseList (index + 1) c == color = (checkWinRow color (index + 1) (tracker + 1) c) 
                                   | otherwise = checkWinRow color (index +1) 0 c
 
 --VAD FAN ÄR DE HÄR hela jävLA WINCHECK kan vara EN JÄvla FUNKTION dkljhfgjkldfgkjhdsfg
-checkDiagonalRight :: String -> Int -> Int -> [String] -> Bool
-checkDiagonalRight color index tracker c | tracker == 4 = True
+checkDiagonalRight :: String -> Int -> Int -> [String] -> Bool -- kolla nere same shit
+checkDiagonalRight color index tracker c | tracker == 4 = True 
                                          | index `mod` 7 == 6 || index > 41 = False
                                          | traverseList (index) c == color = checkDiagonalRight color (index - 6) (tracker +1) c
                                          | otherwise = checkDiagonalRight color (index - 6) 0 c
 
 checkDiagonalLeft :: String -> Int -> Int -> [String] -> Bool
-checkDiagonalLeft color index tracker c | tracker == 4 = True
-                                        | index `mod` 7 == 0 || index < 0 = False
-                                        | traverseList (index) c == color = checkDiagonalLeft color (index - 8) (tracker +1) c
-                                        | otherwise = checkDiagonalLeft color (index - 8) 0 c
+checkDiagonalLeft color index tracker c | tracker == 4 = True -- vinst
+                                        | index `mod` 7 == 0 || index < 0 = False -- sluta rekursera om vi kommit till column 1  eller om index < 0
+                                        | traverseList (index) c == color = checkDiagonalLeft color (index - 8) (tracker +1) c   -- kolla nästa med +1 tracker
+                                        | otherwise = checkDiagonalLeft color (index - 8) 0 c -- inte rätt färg, kolla nästa med nollställd tracker
 
+-- testar alla hårdkodade positioner. Diagonal kan bara ske på vissa rader
 checkDiagonalMannen :: String -> [String] -> Bool
 checkDiagonalMannen color c | checkDiagonalRight color 21 0 c ||
  checkDiagonalRight color 28 0 c || 
