@@ -26,6 +26,8 @@ changeColor :: String -> Int -> [String] -> [String]
 changeColor color x (k:cs) | x > 0 =  [k] ++ changeColor color (x-1) cs
                 | otherwise = (color:cs)
 
+
+
 --main = do
     --skriv hej skriv en int
     --hämta int
@@ -61,6 +63,14 @@ checkWinColumn :: String -> Int -> [String] -> Bool
 checkWinColumn color index c | (traverseList (index + 7) c == color && traverseList (index + 14) c == color && traverseList (index + 21) c == color) = True
                              | otherwise = False
 
+
+--checkwinColumn2 är den rätta versionen. Inte helt testat klart än.
+checkWinColumn2 :: String -> Int -> Int -> Int -> [String] -> Bool
+checkWinColumn2 color row index tracker c | tracker == 3 = True
+                              | index  == 41 = False
+                              | index > 34 = checkWinColumn2 color (row + 1) (row + 1) 0 c
+                              | traverseList index c == color = checkWinColumn2 color row (index + 7) (tracker + 1) c
+                              | otherwise = checkWinColumn2 color row (index + 7) tracker c
 
 --vill jättegärna kunna hålla koll på koordinaten där markören hamnar 
 
