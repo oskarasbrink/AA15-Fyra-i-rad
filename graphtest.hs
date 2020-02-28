@@ -1,5 +1,5 @@
 
- --main = display (InWindow "Nice Window" (200, 200) (10, 10)) white (Circle 80)
+ --main = display (InWindow "Nice Window" (200, 200) (10, 10)) (getcolor 1 gs)  (Circle 80)
  ---}
 
 --ladda flera bilder
@@ -25,13 +25,13 @@ import Graphics.Gloss
 windowDisplay :: Display
 windowDisplay = InWindow "Window" (300, 300) (100, 100)
 
---main = animate windowDisplay white animationFunc
+--main = animate windowDisplay (getcolor 1 gs)  animationFunc
 
 --animationFunc :: Float -> Picture
 --animationFunc time = circleSolid (2*time)
 
 type Model = (Float, Float)
-data Slot = Empty | Red | Black 
+--data Slot = Empty | Red | Black 
 type World = [(Float, Float)]
 --world tar nu flera koordinater. kanske bör dom ta nycklar för sin pos
 --world =/= gamestate ?? 
@@ -50,6 +50,7 @@ main = play
 
 mkCircle :: Color -> Float -> Float -> Picture
 mkCircle col x y = pictures [translate x y $ color col $ circleSolid 26]
+
 
 -- kolumn, jämna avstånd som kollar högre eller mindre från toppen, rutnät, ändrar x och y koordinater
 drawingFunc :: World -> Picture
