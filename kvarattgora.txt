@@ -1,0 +1,6 @@
+-skriv ut och uppdatera pil/släppraden
+-fixa vettiga datatyper
+-lite buggar i markörplaceringen
+-var fan ska wincheck in i hela skiten
+
+-om nån är ambitiös fixar vi en scoreboard
