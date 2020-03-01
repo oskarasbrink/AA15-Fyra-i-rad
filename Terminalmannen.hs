@@ -64,7 +64,7 @@ checkWinColumn color index c | (traverseList (index + 7) c == color && traverseL
                              | otherwise = False
 
 
---checkwinColumn2 är den rätta versionen. Inte helt testat klart än.
+--checkwinColumn2 är den rätta versionen. Inte helt testat klart
 checkWinColumn2 :: String -> Int -> Int -> Int -> [String] -> Bool
 checkWinColumn2 color row index tracker c | tracker == 3 = True
                               | index  == 41 = False
