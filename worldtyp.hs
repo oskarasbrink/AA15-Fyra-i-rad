@@ -8,6 +8,29 @@ type World = ((Int,(Int,(Float,Float))),GameState)
 -- World bör skrivas om till en --Data Game osv
 
 
+
+--var kollar man efter win
+
+
+{-}
+switchPlayer game =
+    case gamePlayer game of
+      PlayerX -> game { gamePlayer = PlayerO }
+      PlayerO -> game { gamePlayer = PlayerX }
+-}
+
+
+data Player = PlayerX | PlayerO deriving (Eq, Show)
+data State = Running | GameOver (Maybe Player) deriving (Eq, Show)
+
+type Board = [((Float,Float),Color)]
+
+data Game = Game { gameBoard :: Board
+                 , gamePlayer :: Player
+                 , gameState :: State
+                 } deriving (Eq, Show)
+
+
 main =
    play windowDisplay black 5 ((1,(0,((-300),320))),(generateBoard')) drawingFunc inputHandler' (const id)
   
@@ -15,7 +38,9 @@ main =
 --inputHandler' :: Event -> World -> World
 
 -- 3 första fallen väntar på knapptryck. Sista fallet (om inget knapptryck) skickar tillbaks samma värld
-inputHandler' (EventKey (SpecialKey KeySpace) Down _ _) ((x,(index,t)),gs) = (((-1)*x,(index,t)),(newDropMannen (colorfunction x) 0 index gs))
+inputHandler' (EventKey (SpecialKey KeyUp) Down _ _) ((_,(index,t)),gs) = ((3,(index,t)),generateBoard')
+inputHandler' (EventKey (SpecialKey KeySpace) Down _ _) ((x,(index,t)),gs) | checkWin (colorfunction x) gs = (((-1)*x,(index,t)),generateBoard') 
+                                                                           | otherwise = (((-1)*x,(index,t)),(newDropMannen (colorfunction x) 0 index gs)) 
 inputHandler' (EventKey (SpecialKey KeyRight) Down _ _) ((x,t1),gs) = ((x,(plusArrowIndex t1)),gs)
 inputHandler' (EventKey (SpecialKey KeyLeft) Down _ _) ((x,t1),gs) = ((x,(minusArrowIndex t1)),gs)
 inputHandler' _ ((x,(index,t)),gs) = ((x,(index,t)),gs)
@@ -146,8 +171,13 @@ newCheckDiagonalMannen color gs | newCheckDiagonalRight color 21 0 gs ||
  newCheckDiagonalLeft color 38 0 gs = True
                              | otherwise = False
                              
+checkWin :: Color -> GameState -> Bool
+checkWin color gs | newCheckDiagonalMannen color gs || newCheckWinRow color 0 0 gs  || newCheckWinColumn2 color 0 0 0 gs = True
+               | otherwise = False 
 
-
+checkWinToInt :: Bool -> Int -> Int
+checkWinToInt bool x | bool == True = 3
+                     | otherwise = x
 --Visa rutan
 windowDisplay :: Display
 windowDisplay = InWindow "Window" (300, 300) (100, 100)
