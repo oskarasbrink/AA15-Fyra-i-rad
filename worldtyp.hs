@@ -39,7 +39,7 @@ main =
 
 -- 3 första fallen väntar på knapptryck. Sista fallet (om inget knapptryck) skickar tillbaks samma värld
 inputHandler' (EventKey (SpecialKey KeyUp) Down _ _) ((_,(index,t)),gs) = ((3,(index,t)),generateBoard')
-inputHandler' (EventKey (SpecialKey KeySpace) Down _ _) ((x,(index,t)),gs) | checkWin (colorfunction x) gs = (((-1)*x,(index,t)),generateBoard') 
+inputHandler' (EventKey (SpecialKey KeySpace) Down _ _) ((x,(index,t)),gs) | checkWin (colorfunction  x) (newDropMannen (colorfunction x) 0 index gs) = (((-1)*x,(index,t)),generateBoard') 
                                                                            | otherwise = (((-1)*x,(index,t)),(newDropMannen (colorfunction x) 0 index gs)) 
 inputHandler' (EventKey (SpecialKey KeyRight) Down _ _) ((x,t1),gs) = ((x,(plusArrowIndex t1)),gs)
 inputHandler' (EventKey (SpecialKey KeyLeft) Down _ _) ((x,t1),gs) = ((x,(minusArrowIndex t1)),gs)
@@ -47,11 +47,11 @@ inputHandler' _ ((x,(index,t)),gs) = ((x,(index,t)),gs)
 
  -- flyttar pilen åt höger om den inte är längst till höger. tar pil-index och koordinat som argument. Mitt-delen av World-datatypen längst upp               
 plusArrowIndex :: (Int,(Float,Float)) -> (Int,(Float,Float))
-plusArrowIndex (index,(x,y)) | index == 7 = (7,(x,y))
+plusArrowIndex (index,(x,y)) | index == 6 = (6,(x,y))
                         | otherwise = ((index + 1),((x + 150 ),y))
 --same but different
 minusArrowIndex :: (Int,(Float,Float)) -> (Int,(Float,Float))
-minusArrowIndex (index,(x,y)) | index == 1 = (1,(x,y))
+minusArrowIndex (index,(x,y)) | index == 0 = (0,(x,y))
                         | otherwise = ((index - 1),((x - 150) ,y))
 
 -- spyr
@@ -175,6 +175,7 @@ checkWin :: Color -> GameState -> Bool
 checkWin color gs | newCheckDiagonalMannen color gs || newCheckWinRow color 0 0 gs  || newCheckWinColumn2 color 0 0 0 gs = True
                | otherwise = False 
 
+--nej
 checkWinToInt :: Bool -> Int -> Int
 checkWinToInt bool x | bool == True = 3
                      | otherwise = x
@@ -204,6 +205,8 @@ main = play
 
 -}
 
+mkSmallCircle :: Color -> Float -> Float -> Picture
+mkSmallCircle col x y = pictures [translate x y $ color col $ circleSolid 13]
 
 mkCircle :: Color -> Float -> Float -> Picture
 mkCircle col x y = pictures [translate x y $ color col $ circleSolid 26]
@@ -232,7 +235,8 @@ ohmygoddrawingFunc gs = pictures [rectangleSolid 1400 900, mkCircle (getcolor 16
                                                            mkCircle (getcolor 0 gs ) (-300) 240, mkCircle (getcolor 7 gs ) (-300) 140, mkCircle (getcolor 14 gs ) (-300) 40, mkCircle (getcolor 21 gs ) (-300) (-60), mkCircle (getcolor 28 gs ) (-300) (-160), mkCircle (getcolor 35 gs ) (-300) (-260)]
 -}
 --tar World som argument. Skriver ut allt som Picture
-drawingFunc ((x,(index,t)),gs) = pictures [rectangleSolid 1400 900, mkCircle (getcolor 16 gs ) 0 40, mkCircle (getcolor 10 gs) 150 140, mkCircle (getcolor 4 gs)  300 240, mkCircle (getcolor 5 gs ) 450 240, mkCircle (getcolor 11 gs ) 300 140, 
+{-
+drawingFunc2 ((x,(index,t)),gs) = pictures [rectangleSolid 1400 900, mkCircle (getcolor 16 gs ) 0 40, mkCircle (getcolor 10 gs) 150 140, mkCircle (getcolor 4 gs)  300 240, mkCircle (getcolor 5 gs ) 450 240, mkCircle (getcolor 11 gs ) 300 140, 
                                                            mkCircle (getcolor 9 gs ) 0 140, mkCircle (getcolor 2 gs ) 0 240, mkCircle (getcolor 23 gs ) 0 (-60), mkCircle (getcolor 3 gs ) 150 240, mkCircle (getcolor 12 gs ) 450 140,
                                                            mkCircle (getcolor 30 gs ) 0 (-160), mkCircle (getcolor 37 gs ) 0 (-260), mkCircle (getcolor 17 gs ) 150 40, mkCircle (getcolor 24 gs ) 150 (-60), mkCircle (getcolor 31 gs) 150 (-160), mkCircle (getcolor 38 gs ) 150 (-260),
                                                            mkCircle (getcolor 18 gs ) 300 40, mkCircle (getcolor 25 gs ) 300 (-60), mkCircle (getcolor 32 gs ) 300 (-160), mkCircle (getcolor 39 gs ) 300 (-260),
@@ -240,7 +244,15 @@ drawingFunc ((x,(index,t)),gs) = pictures [rectangleSolid 1400 900, mkCircle (ge
                                                            mkCircle (getcolor 6 gs ) 600 240, mkCircle (getcolor 13 gs ) 600 140, mkCircle (getcolor 20 gs ) 600 40, mkCircle (getcolor 27 gs ) 600 (-60), mkCircle (getcolor 34 gs ) 600 (-160), mkCircle (getcolor 41 gs ) 600 (-260),
                                                            mkCircle (getcolor 1 gs ) (-150) 240, mkCircle (getcolor 8 gs ) (-150) 140, mkCircle (getcolor 15 gs ) (-150) 40, mkCircle (getcolor 22 gs )  (-150) (-60), mkCircle (getcolor 29 gs ) (-150) (-160), mkCircle (getcolor 36 gs ) (-150) (-260),
                                                            mkCircle (getcolor 0 gs ) (-300) 240, mkCircle (getcolor 7 gs ) (-300) 140, mkCircle (getcolor 14 gs ) (-300) 40, mkCircle (getcolor 21 gs ) (-300) (-60), mkCircle (getcolor 28 gs ) (-300) (-160), mkCircle (getcolor 35 gs ) (-300) (-260)]
-
+-}
+drawingFunc ((x,(index,(t1,t2))),gs) = pictures [rectangleSolid 1400 900, mkCircle (getcolor 16 gs ) 0 40, mkCircle (getcolor 10 gs) 150 140, mkCircle (getcolor 4 gs)  300 240, mkCircle (getcolor 5 gs ) 450 240, mkCircle (getcolor 11 gs ) 300 140, 
+                                                           mkCircle (getcolor 9 gs ) 0 140, mkCircle (getcolor 2 gs ) 0 240, mkCircle (getcolor 23 gs ) 0 (-60), mkCircle (getcolor 3 gs ) 150 240, mkCircle (getcolor 12 gs ) 450 140,
+                                                           mkCircle (getcolor 30 gs ) 0 (-160), mkCircle (getcolor 37 gs ) 0 (-260), mkCircle (getcolor 17 gs ) 150 40, mkCircle (getcolor 24 gs ) 150 (-60), mkCircle (getcolor 31 gs) 150 (-160), mkCircle (getcolor 38 gs ) 150 (-260),
+                                                           mkCircle (getcolor 18 gs ) 300 40, mkCircle (getcolor 25 gs ) 300 (-60), mkCircle (getcolor 32 gs ) 300 (-160), mkCircle (getcolor 39 gs ) 300 (-260),
+                                                           mkCircle (getcolor 19 gs ) 450 40, mkCircle (getcolor 26 gs ) 450 (-60), mkCircle (getcolor 33 gs ) 450 (-160), mkCircle (getcolor 40 gs ) 450 (-260),
+                                                           mkCircle (getcolor 6 gs ) 600 240, mkCircle (getcolor 13 gs ) 600 140, mkCircle (getcolor 20 gs ) 600 40, mkCircle (getcolor 27 gs ) 600 (-60), mkCircle (getcolor 34 gs ) 600 (-160), mkCircle (getcolor 41 gs ) 600 (-260),
+                                                           mkCircle (getcolor 1 gs ) (-150) 240, mkCircle (getcolor 8 gs ) (-150) 140, mkCircle (getcolor 15 gs ) (-150) 40, mkCircle (getcolor 22 gs )  (-150) (-60), mkCircle (getcolor 29 gs ) (-150) (-160), mkCircle (getcolor 36 gs ) (-150) (-260),
+                                                           mkCircle (getcolor 0 gs ) (-300) 240, mkCircle (getcolor 7 gs ) (-300) 140, mkCircle (getcolor 14 gs ) (-300) 40, mkCircle (getcolor 21 gs ) (-300) (-60), mkCircle (getcolor 28 gs ) (-300) (-160), mkCircle (getcolor 35 gs ) (-300) (-260), mkSmallCircle (colorfunction x) t1 t2]
 
 --används inte tror jag
 checkCoordinates :: Float -> Float
