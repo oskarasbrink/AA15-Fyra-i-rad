@@ -5,7 +5,6 @@ import Graphics.Gloss
 --type GameState = [((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String),((Float,Float),String)]
 type GameState = [((Float,Float),Color)]
 type World = ((Int,(Int,(Float,Float))),GameState)
--- World bör skrivas om till en --Data Game osv
 
 
 
@@ -39,8 +38,9 @@ main =
 
 -- 3 första fallen väntar på knapptryck. Sista fallet (om inget knapptryck) skickar tillbaks samma värld
 inputHandler' (EventKey (SpecialKey KeyUp) Down _ _) ((_,(index,t)),gs) = ((3,(index,t)),generateBoard')
-inputHandler' (EventKey (SpecialKey KeySpace) Down _ _) ((x,(index,t)),gs) | checkWin (colorfunction x) gs = (((-1)*x,(index,t)),generateBoard') 
-                                                                           | otherwise = (((-1)*x,(index,t)),(newDropMannen (colorfunction x) 0 index gs)) 
+inputHandler' (EventKey (SpecialKey KeySpace) Down _ _) ((x,(index,t)),((z,p):xs)) | checkWin (colorfunction  x) (newDropMannen (colorfunction x) 0 index ((z,p):xs)) = (((-1)*x,((index,t))),((z,green):xs))
+                                                                           | index < 7 && newTraverseList index ((z,p):xs) /= (greyN 0.5) = ((x,(index,t)),((z,p):xs))
+                                                                           | otherwise = (((-1)*x,(index,t)),(newDropMannen (colorfunction x) 0 index ((z,p):xs))) 
 inputHandler' (EventKey (SpecialKey KeyRight) Down _ _) ((x,t1),gs) = ((x,(plusArrowIndex t1)),gs)
 inputHandler' (EventKey (SpecialKey KeyLeft) Down _ _) ((x,t1),gs) = ((x,(minusArrowIndex t1)),gs)
 inputHandler' _ ((x,(index,t)),gs) = ((x,(index,t)),gs)
@@ -148,13 +148,13 @@ newCheckWinRow color index tracker gs | tracker == 3 = True
                                       | otherwise = newCheckWinRow color (index + 1) 0 gs
 --obs hanterar gamestate och ej world
 newCheckDiagonalRight :: Color -> Int -> Int -> GameState -> Bool
-newCheckDiagonalRight color index tracker gs | tracker == 4 = True
-                                             | index `mod`7 == 6 || index > 41 = False
+newCheckDiagonalRight color index tracker gs | tracker == 3 = True
+                                             | index `mod`7 == 6 || index < 0 = False
                                              | newTraverseList index gs == color = newCheckDiagonalRight color (index -6) (tracker + 1) gs
                                              | otherwise = newCheckDiagonalRight color (index - 6) 0 gs
 --obs hanterar gamestate och ej world
 newCheckDiagonalLeft :: Color -> Int -> Int -> GameState -> Bool
-newCheckDiagonalLeft color index tracker gs | tracker == 4 = True
+newCheckDiagonalLeft color index tracker gs | tracker == 3 = True
                                             | index `mod` 7 == 0 || index < 0 = False
                                             | newTraverseList index gs == color = newCheckDiagonalLeft color (index - 8) (tracker +1 ) gs
                                             | otherwise = newCheckDiagonalLeft color (index - 8) 0 gs
@@ -180,7 +180,7 @@ checkWinToInt bool x | bool == True = 3
                      | otherwise = x
 --Visa rutan
 windowDisplay :: Display
-windowDisplay = InWindow "Window" (300, 300) (100, 100)
+windowDisplay = InWindow "Window" (800, 600) (200,200)
 
 --main = animate windowDisplay white animationFunc
 
