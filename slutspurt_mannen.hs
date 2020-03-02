@@ -163,8 +163,7 @@ newCheckDiagonalMannen color gs | newCheckDiagonalRight color 21 0 gs ||
                              | otherwise = False
                              
 
-mkSmallCircle :: Color -> Float -> Float -> Picture
-mkSmallCircle col x y = pictures [translate x y $ color col $ circleSolid 13]
+
 
 windowDisplay :: Display
 windowDisplay = InWindow "Window" (300, 300) (100, 100)

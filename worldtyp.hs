@@ -8,7 +8,6 @@ type World = ((Int,(Int,(Float,Float))),GameState)
 -- World bör skrivas om till en --Data Game osv
 
 
-
 --var kollar man efter win
 
 
@@ -40,6 +39,7 @@ main =
 -- 3 första fallen väntar på knapptryck. Sista fallet (om inget knapptryck) skickar tillbaks samma värld
 inputHandler' (EventKey (SpecialKey KeyUp) Down _ _) ((_,(index,t)),gs) = ((3,(index,t)),generateBoard')
 inputHandler' (EventKey (SpecialKey KeySpace) Down _ _) ((x,(index,t)),gs) | checkWin (colorfunction  x) (newDropMannen (colorfunction x) 0 index gs) = (((-1)*x,(index,t)),generateBoard') 
+                                                                           | index < 7 && newTraverseList index gs /= (greyN 0.5) = ((x,(index,t)),gs)
                                                                            | otherwise = (((-1)*x,(index,t)),(newDropMannen (colorfunction x) 0 index gs)) 
 inputHandler' (EventKey (SpecialKey KeyRight) Down _ _) ((x,t1),gs) = ((x,(plusArrowIndex t1)),gs)
 inputHandler' (EventKey (SpecialKey KeyLeft) Down _ _) ((x,t1),gs) = ((x,(minusArrowIndex t1)),gs)
@@ -90,14 +90,7 @@ play gameState = do
       play newNewGameState      
 
 -}
---skippa denna
-makegrey :: String -> [String]
-makegrey g = [g,g,g,g,g,g,g
-    , g,g,g,g,g,g,g
-    , g,g,"Red",g,g,g,g
-    , g,g,g,g,g,g,g
-    , g,g,g,g,"Red",g,g
-    , g,g,"Red","Red","Red","Red",g]
+
 
 --vet faktiskt inte
 newChangeColor :: Color -> Int -> GameState -> GameState
@@ -115,13 +108,14 @@ generateBoard' = [((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((
 -- Hämtar färgen från ett visst index
 newTraverseList :: Int -> GameState -> Color
 newTraverseList x (c:cs) | x == length (c:cs) = snd c
+                         | cs == [] = snd c
                          | x <= 0 = snd c
                          | otherwise = newTraverseList (x-1) cs
 
 
 --droppar markören mannen. Kollar om något finns under. Obs här är gamestate och inte world
 newDropMannen :: Color -> Int -> Int -> GameState -> GameState
-newDropMannen color dim x gs | dim * 7 == 42 = gs
+newDropMannen color dim x gs | dim * 7 == 42 =  gs
                              | (newTraverseList (((6-dim)*7)-(7-x)) gs) == greyN 0.5 = newChangeColor color (((6-dim)*7)-(7-x)) gs
                              | otherwise = newDropMannen  color (dim+1) x gs
 
@@ -129,9 +123,9 @@ newDropMannen color dim x gs | dim * 7 == 42 = gs
 newCheckWinColumn2 :: Color -> Int -> Int -> Int -> GameState -> Bool
 newCheckWinColumn2 color row index tracker gs | tracker == 3 = True
                                               | index == 41 = False
-                                              | index > 34 = newCheckWinColumn2 color (row +1) (row + 1) 0 gs
+                                              | index > 34 = newCheckWinColumn2 color (row +1) (row + 1) 0 gs 
                                               | newTraverseList index gs == color = newCheckWinColumn2 color row (index + 7) (tracker +1) gs
-                                              | otherwise = newCheckWinColumn2 color row (index + 7) tracker gs -- AKTA DIG
+                                              | otherwise = newCheckWinColumn2 color row (index + 7) 0 gs -- AKTA DIG
 
 
 --vill jättegärna kunna hålla koll på koordinaten där markören hamnar 
@@ -181,16 +175,12 @@ checkWinToInt bool x | bool == True = 3
                      | otherwise = x
 --Visa rutan
 windowDisplay :: Display
-windowDisplay = InWindow "Window" (300, 300) (100, 100)
+windowDisplay = InWindow "Window" (800, 600) (100, 100)
 
 --main = animate windowDisplay white animationFunc
 
 --animationFunc :: Float -> Picture
 --animationFunc time = circleSolid (2*time)
-
---this is shit
-type Model = (Float, Float)
-data Slot = Empty | Red | Black 
 
 {-
 main :: IO ()
