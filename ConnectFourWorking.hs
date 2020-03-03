@@ -18,18 +18,18 @@ data Game = Game { gameBoard :: Board
 -}
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss
+import Debug.Trace
 type GameState = [Color]
 type Arrow = (Int,(Float,Float))
 type Player = Int
 type World = ((Player,Arrow),GameState)
-
 main =
    play windowDisplay black 5 ((1,(0,((-300),320))),(generateBoard')) drawingFunc inputHandler' (const id)
 
 
 -- 3 första fallen väntar på knapptryck. Sista fallet (om inget knapptryck) skickar tillbaks samma värld
 
-inputHandler' (EventKey (SpecialKey KeyUp) Down _ _) ((_,(index,t)),gs) = ((1,(index,t)),generateBoard')
+inputHandler' (EventKey (SpecialKey KeyEnter) Down _ _) ((_,(index,t)),gs) = ((1,(index,t)),generateBoard')
 inputHandler' (EventKey (SpecialKey KeySpace) Down _ _) ((x,(index,t)),(p:xs)) | checkWin (colorFunction  x) (dropFunction (colorFunction x) 0 index (p:xs)) = (((-1)*x,((index,t))),(green:xs))
                                                                            | index < 7 && traverseList index (p:xs) /= (greyN 0.5) = ((x,(index,t)),(p:xs))
                                                                            | otherwise = (((-1)*x,(index,t)),(dropFunction (colorFunction x) 0 index (p:xs))) 
@@ -77,10 +77,10 @@ dropFunction color dim x gs | dim * 7 == 42 =  gs
 
 --obs hanterar gamestate
 checkWinColumn :: Color -> Int -> Int -> Int -> GameState -> Bool
-checkWinColumn color row index tracker gs | tracker == 3 = True
+checkWinColumn color row index tracker gs | tracker == 3 = trace("asd") True
                                               | index == 41 = False
                                               | index > 34 = checkWinColumn color (row +1) (row + 1) 0 gs 
-                                              | traverseList index gs == color = checkWinColumn color row (index + 7) (tracker +1) gs
+                                              | traverseList index gs == color && traverseList (index + 7) gs == color = checkWinColumn color row (index + 7) (tracker +1) gs
                                               | otherwise = checkWinColumn color row (index + 7) 0 gs -- AKTA DIG
 
 --obs hanterar gamestate och ej world
@@ -103,8 +103,8 @@ checkDiagonalLeft color index tracker gs | tracker == 3 = True
                                             | traverseList index gs == color && traverseList (index - 8) gs == color = checkDiagonalLeft color (index - 8) (tracker +1 ) gs
                                             | otherwise = checkDiagonalLeft color (index - 8) 0 gs
 --obs hanterar gamestate och ej world
-checkDiagonalMannen :: Color -> GameState -> Bool
-checkDiagonalMannen color gs | checkDiagonalRight color 21 0 gs ||
+checkDiagonal :: Color -> GameState -> Bool
+checkDiagonal color gs | checkDiagonalRight color 21 0 gs ||
  checkDiagonalRight color 28 0 gs || 
  checkDiagonalRight color 35 0 gs || 
  checkDiagonalRight color 36 0 gs || 
@@ -116,7 +116,7 @@ checkDiagonalMannen color gs | checkDiagonalRight color 21 0 gs ||
                              | otherwise = False
                              
 checkWin :: Color -> GameState -> Bool
-checkWin color gs | checkDiagonalMannen color gs || checkWinRow color 0 0 gs  || checkWinColumn color 0 0 0 gs = True
+checkWin color gs | checkDiagonal color gs || checkWinRow color 0 0 gs  || checkWinColumn color 0 0 0 gs = True
                | otherwise = False 
 
 --Visa rutan
