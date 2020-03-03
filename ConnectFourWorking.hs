@@ -55,10 +55,6 @@ colorFunction x | x == 1 = red
 changeColor :: Color -> Int -> GameState -> GameState
 changeColor color x (c:cs) | x > 0 = [c] ++ changeColor color (x-1) cs
                                   | otherwise = (color:cs)                
-
--- samma fast returnerar gamestate och INTE io-gamestate
---generateBoard :: GameState
---generateBoard = [((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5)),((0,0),(greyN 0.5))]
 generateBoard' :: GameState
 generateBoard' = [(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5),(greyN 0.5)]
 -- Hämtar färgen från ett visst index
