@@ -23,10 +23,11 @@ import Debug.Trace
 type GameState = [Color]
 type Arrow = (Int,(Float,Float))
 type Player = Int
-type World = ((Player,Arrow),GameState)
+type World = (Score,((Player,Arrow),GameState))
+type Score = (Int,Int)
 
 main =
-   play windowDisplay black 5 ((1,(0,((-300),320))),(generateBoard')) drawingFunc inputHandler' (const id)
+   play windowDisplay black 5 ((0,0),(((1,(0,((-300),320)))),(generateBoard'))) drawingFunc inputHandler' (const id)
 
 
 -- 3 första fallen väntar på knapptryck. Sista fallet (om inget knapptryck) skickar tillbaks samma värld
@@ -36,13 +37,14 @@ main =
    EXAMPLES:
   -}
 
-inputHandler' (EventKey (SpecialKey KeyEnter) Down _ _) ((_,(index,t)),gs) = ((1,(index,t)),generateBoard')
-inputHandler' (EventKey (SpecialKey KeySpace) Down _ _) ((x,(index,t)),(p:xs)) | checkWin (colorFunction  x) (dropFunction (colorFunction x) 0 index (p:xs)) = (((-1)*x,((index,t))),(green:xs))
-                                                                           | index < 7 && traverseList index (p:xs) /= (greyN 0.5) = ((x,(index,t)),(p:xs))
-                                                                           | otherwise = (((-1)*x,(index,t)),(dropFunction (colorFunction x) 0 index (p:xs))) 
-inputHandler' (EventKey (SpecialKey KeyRight) Down _ _) ((x,t1),gs) = ((x,(plusArrowIndex t1)),gs)
-inputHandler' (EventKey (SpecialKey KeyLeft) Down _ _) ((x,t1),gs) = ((x,(minusArrowIndex t1)),gs)
-inputHandler' _ ((x,(index,t)),gs) = ((x,(index,t)),gs)
+inputHandler' (EventKey (SpecialKey KeyEnter) Down _ _) (score,((_,(index,t)),gs)) = (score,((1,(index,t)),generateBoard'))
+inputHandler' (EventKey (SpecialKey KeySpace) Down _ _) (score,((x,(index,t)),(p:xs))) | x == 2 = (score,((x,(index,t)),(p:xs)))
+                                                                           | checkWin (colorFunction  x) (dropFunction (colorFunction x) 0 index (p:xs)) = ((increaseScore (colorFunction x) score),((2,(index,t)),(dropFunction (colorFunction x) 0 index (p:xs))))
+                                                                           | index < 7 && traverseList index (p:xs) /= (greyN 0.5) = (score,((x,(index,t)),(p:xs)))
+                                                                           | otherwise = (score,(((-1)*x,(index,t)),(dropFunction (colorFunction x) 0 index (p:xs)))) 
+inputHandler' (EventKey (SpecialKey KeyRight) Down _ _) (score,((x,t1),gs)) = (score,((x,(plusArrowIndex t1)),gs))
+inputHandler' (EventKey (SpecialKey KeyLeft) Down _ _) (score,((x,t1),gs)) = (score,((x,(minusArrowIndex t1)),gs))
+inputHandler' _ (score,((x,(index,t)),gs)) = (score,((x,(index,t)),gs))
 
  
  -- flyttar pilen åt höger om den inte är längst till höger. tar pil-index och koordinat som argument. Mitt-delen av World-datatypen längst upp               
@@ -52,6 +54,10 @@ inputHandler' _ ((x,(index,t)),gs) = ((x,(index,t)),gs)
    PRE: 0 <= index <= 6
    EXAMPLES:
   -}
+increaseScore:: Color -> Score -> Score
+increaseScore color (x,y) |  color == red = ((x+1),y)
+                          |  color == blue = (x,(y+1))
+                          | otherwise = (x,y)
 
 plusArrowIndex :: Arrow -> Arrow
 plusArrowIndex (index,(x,y)) | index == 6 = (6,(x,y))
@@ -69,8 +75,9 @@ minusArrowIndex (index,(x,y)) | index == 0 = (0,(x,y))
                         | otherwise = ((index - 1),((x - 150) ,y))
 
 colorFunction :: Int -> Color 
-colorFunction x | x == 1 = red
-                | otherwise = blue
+colorFunction x | x == 2 = green
+                | x == 1 = red
+                | otherwise  = blue
 
 
 --vet faktiskt inte
@@ -119,7 +126,7 @@ dropFunction color dim x gs | dim * 7 == 42 =  gs
   -}
 
 checkWinColumn :: Color -> Int -> Int -> Int -> GameState -> Bool
-checkWinColumn color row index tracker gs | tracker == 3 = trace("asd") True
+checkWinColumn color row index tracker gs | tracker == 3 = trace(show color) True
                                               | index == 41 = False
                                               | index > 34 = checkWinColumn color (row +1) (row + 1) 0 gs 
                                               | traverseList index gs == color && traverseList (index + 7) gs == color = checkWinColumn color row (index + 7) (tracker +1) gs
@@ -204,7 +211,7 @@ checkWin color gs | checkDiagonal color gs || checkWinRow color 0 0 gs  || check
 
 
 windowDisplay :: Display
-windowDisplay = InWindow "Window" (800, 600) (100, 100)
+windowDisplay = InWindow "Window" (1440, 900) (0,0)
 
 {- mkSmallCircle col x y
    Creates a small coloured circle at a pre-determined position 
@@ -221,6 +228,9 @@ mkSmallCircle col x y = pictures [translate x y $ color col $ circleSolid 13]
 
 mkCircle :: Color -> Float -> Float -> Picture
 mkCircle col x y = pictures [translate x y $ color col $ circleSolid 26]
+
+mkScore :: Score -> Float -> Float -> Picture
+mkScore (x,y) z q = pictures [translate z q $ color red $ text (show x) ,translate (z-100) (q-100) $ color blue $ text (show y)]
 
 --index greater than 41?
 {- getcolor index list
@@ -241,14 +251,14 @@ getcolor  index (x:xs) | index == 0 = x
                                 --creates 4 white circles in a row on top of a rectangle
   -}
 
-drawingFunc ((x,(index,(t1,t2))),gs) = pictures [rectangleSolid 1400 900, mkCircle (getcolor 16 gs ) 0 40, mkCircle (getcolor 10 gs) 150 140, mkCircle (getcolor 4 gs)  300 240, mkCircle (getcolor 5 gs ) 450 240, mkCircle (getcolor 11 gs ) 300 140, 
+drawingFunc (score,((x,(index,(t1,t2))),gs)) = pictures [rectangleSolid 1400 900, mkCircle (getcolor 16 gs ) 0 40, mkCircle (getcolor 10 gs) 150 140, mkCircle (getcolor 4 gs)  300 240, mkCircle (getcolor 5 gs ) 450 240, mkCircle (getcolor 11 gs ) 300 140, 
                                                            mkCircle (getcolor 9 gs ) 0 140, mkCircle (getcolor 2 gs ) 0 240, mkCircle (getcolor 23 gs ) 0 (-60), mkCircle (getcolor 3 gs ) 150 240, mkCircle (getcolor 12 gs ) 450 140,
                                                            mkCircle (getcolor 30 gs ) 0 (-160), mkCircle (getcolor 37 gs ) 0 (-260), mkCircle (getcolor 17 gs ) 150 40, mkCircle (getcolor 24 gs ) 150 (-60), mkCircle (getcolor 31 gs) 150 (-160), mkCircle (getcolor 38 gs ) 150 (-260),
                                                            mkCircle (getcolor 18 gs ) 300 40, mkCircle (getcolor 25 gs ) 300 (-60), mkCircle (getcolor 32 gs ) 300 (-160), mkCircle (getcolor 39 gs ) 300 (-260),
                                                            mkCircle (getcolor 19 gs ) 450 40, mkCircle (getcolor 26 gs ) 450 (-60), mkCircle (getcolor 33 gs ) 450 (-160), mkCircle (getcolor 40 gs ) 450 (-260),
                                                            mkCircle (getcolor 6 gs ) 600 240, mkCircle (getcolor 13 gs ) 600 140, mkCircle (getcolor 20 gs ) 600 40, mkCircle (getcolor 27 gs ) 600 (-60), mkCircle (getcolor 34 gs ) 600 (-160), mkCircle (getcolor 41 gs ) 600 (-260),
                                                            mkCircle (getcolor 1 gs ) (-150) 240, mkCircle (getcolor 8 gs ) (-150) 140, mkCircle (getcolor 15 gs ) (-150) 40, mkCircle (getcolor 22 gs )  (-150) (-60), mkCircle (getcolor 29 gs ) (-150) (-160), mkCircle (getcolor 36 gs ) (-150) (-260),
-                                                           mkCircle (getcolor 0 gs ) (-300) 240, mkCircle (getcolor 7 gs ) (-300) 140, mkCircle (getcolor 14 gs ) (-300) 40, mkCircle (getcolor 21 gs ) (-300) (-60), mkCircle (getcolor 28 gs ) (-300) (-160), mkCircle (getcolor 35 gs ) (-300) (-260), mkSmallCircle (colorFunction x) t1 t2]
+                                                           mkCircle (getcolor 0 gs ) (-300) 240, mkCircle (getcolor 7 gs ) (-300) 140, mkCircle (getcolor 14 gs ) (-300) 40, mkCircle (getcolor 21 gs ) (-300) (-60), mkCircle (getcolor 28 gs ) (-300) (-160), mkCircle (getcolor 35 gs ) (-300) (-260), mkSmallCircle (colorFunction x) t1 t2,mkScore score (-500) 240]--,mkSmallCircle green (-500) 240]
 
 
 
@@ -297,10 +307,10 @@ test13 = TestCase $ assertEqual "checkWinRow red"
 
 test14 = TestCase $ assertEqual "checkWinRow red"
            (False) (checkWinRow red 0 0 (dropFunction red 0 0(dropFunction red 0 1(dropFunction blue 0 2(dropFunction red 0 3(dropFunction red 0 4(dropFunction red 0 5 (generateBoard'))))))))
-{-
-test14 = TestCase $ assertEqual "checkDiagonal red"
+
+test15 = TestCase $ assertEqual "checkDiagonal red"
            (False) (checkWinRow red 0 0 (dropFunction red 0 0(dropFunction red 0 1(dropFunction blue 0 2(dropFunction red 0 3(dropFunction red 0 4(dropFunction red 0 5 (generateBoard'))))))))
--}
+
 
 
 
